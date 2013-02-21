@@ -15,6 +15,8 @@ defmodule StockServer.Mixfile do
   # Returns the list of dependencies in the format:
   # { :foobar, "0.1", git: "https://github.com/elixir-lang/foobar.git" }
   defp deps do
-    []
+    [
+      { :ecsv, "1", github: "refuge/ecsv" }
+    ]
   end
 end
