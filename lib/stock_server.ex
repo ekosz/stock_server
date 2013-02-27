@@ -1,10 +1,10 @@
 defmodule StockServer do
-  use GenServer.Behaviour
+  use Application.Behaviour
 
   ## API
   
-  def start_link do
-    :gen_server.start_link(__MODULE__, [], [])
+  def start(_type, args) do
+    StockServer.ConnectionSup.start_link
   end
 
 end
