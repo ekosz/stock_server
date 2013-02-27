@@ -1,15 +1,19 @@
+defrecord StockServer.Connection.State, lsocket: nil, name: nil, stocks: []
+
 defmodule StockServer.Connection do
   use GenServer.Behaviour
 
-  alias StockServer.ConnectionSup, as: Sup
-  alias StockServer.Connection.CommandHandler, as: CommandHandler
+  alias StockServer.Connection.State, as: State
+  import StockServer.ConnectionSup, only: [start_socket: 0]
+  import StockServer.Connection.CommandHandler, only: [handle_command: 2]
 
   @welcome_msg "Welcome to the stock trader!~n~nComands:~nregister <name> - Registers your comapny~nbuy <stock> <amount> - buys amount of stock~nsell <stock> <amount> - sells amount of stock~ncurrent_stocks - list position of current stocks~nquit - closes the connection~n"
 
-  defrecord State, lsocket: nil, name: nil, stocks: []
-
   ## API
 
+  @doc """
+  Starts a process listening on a socket.
+  """
   def start_link(socket) do
     :gen_server.start_link(__MODULE__, [socket], [])
   end
@@ -23,7 +27,7 @@ defmodule StockServer.Connection do
 
   def handle_cast(:accept, State[lsocket: listen_socket] = state) do
     {:ok, accept_socket} = :gen_tcp.accept(listen_socket)
-    Sup.start_socket()
+    start_socket()
     send(accept_socket, @welcome_msg, [])
     {:noreply, state}
   end
@@ -41,7 +45,7 @@ defmodule StockServer.Connection do
 
   def handle_info({:tcp, socket, reply}, state) do
     response = try do
-      CommandHandler.handle_command(reply, state)
+      handle_command(reply, state)
     rescue
       error in _ -> 
         :error_logger.error_report(error)

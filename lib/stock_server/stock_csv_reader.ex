@@ -1,4 +1,13 @@
 defmodule StockServer.StockCSVReader do
+  @doc """
+  Reads a csv file located in the data/ directory
+
+  ## Example
+
+      read(:APPL) #=> Reads and parses data/appl.csv
+
+  """
+
   def read(stock) do
     {:ok, io_device} = :file.open(file_path(stock), [:read])
 
