@@ -7,8 +7,6 @@ defmodule StockServer.Connection do
   import StockServer.ConnectionSup, only: [start_socket: 0]
   import StockServer.Connection.CommandHandler, only: [handle_command: 2]
 
-  @welcome_msg "Welcome to the stock trader!~n~nComands:~nregister <name> - Registers your comapny~nprice <stock> - retuns the price of the stock~nbuy <stock> <amount> - buys amount of stock~nsell <stock> <amount> - sells amount of stock~ncurrent_cash - list current cash~ncurrent_stocks - list position of current stocks~nquit - closes the connection~n"
-
   ## API
 
   @doc """
@@ -28,12 +26,11 @@ defmodule StockServer.Connection do
   def handle_cast(:accept, State[lsocket: listen_socket] = state) do
     {:ok, accept_socket} = :gen_tcp.accept(listen_socket)
     start_socket()
-    send(accept_socket, @welcome_msg, [])
     {:noreply, state}
   end
 
   defp send(socket, message, args) do
-    :ok = :gen_tcp.send(socket, :io_lib.format(message<>"~n~n", args))
+    :ok = :gen_tcp.send(socket, :io_lib.format(message<>"~n", args))
     :ok = :inet.setopts(socket, [{:active, :once}])
     :ok
   end

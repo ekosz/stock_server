@@ -16,6 +16,13 @@ defmodule StockServer.Connection.CommandHandler do
     {:error, "not_registered", state}
   end
 
+  def handle_command('list_stocks'++_, state) do
+    message = Enum.reduce StockServer.StockSup.all_stocks, "", fn(stock, msg) ->
+      msg<>"#{stock} "
+    end
+    {:ok, message, state}
+  end
+
   def handle_command('price '++rest, state) do
     price = StockServer.Stock.current_price(extract_stock(first_word(rest)))
     {:ok, format_price(price), state}

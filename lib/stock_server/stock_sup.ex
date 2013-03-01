@@ -6,13 +6,19 @@ defmodule StockServer.StockSup do
     :supervisor.start_link({:local, __MODULE__}, __MODULE__, [])
   end
 
+  def all_stocks do
+    Enum.map :supervisor.which_children(__MODULE__), fn({id, _pid, _type, _modules}) ->
+      id
+    end
+  end
+
   ## Callbacks
 
   def init([]) do
     stocks = [:APPL]
 
     workers = Enum.map stocks, fn(stock) ->
-      worker(StockServer.Stock, [stock])
+      worker(StockServer.Stock, [stock], id: stock)
     end
 
     supervise(workers, strategy: :one_for_one)
