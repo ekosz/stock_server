@@ -10,9 +10,10 @@ defmodule StockServerSup do
   ## Callbacks
 
   def init([]) do
-    children = [ worker(StockServer.ConnectionSup, []),
-                 worker(StockServer.TimerServer, []),
-                 worker(StockServer.StockNotifier, []) ]
+    children = [ worker(StockServer.StockNotifier, []),
+                 worker(StockServer.ConnectionSup, []),
+                 worker(StockServer.StockSup, []),
+                 worker(StockServer.TimerServer, []) ]
     supervise(children, strategy: :one_for_one)
   end
 end

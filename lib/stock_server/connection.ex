@@ -1,4 +1,4 @@
-defrecord StockServer.Connection.State, lsocket: nil, name: nil, stocks: []
+defrecord StockServer.Connection.State, lsocket: nil, name: nil, stocks: [], cash: 100_000.00
 
 defmodule StockServer.Connection do
   use GenServer.Behaviour
@@ -7,7 +7,7 @@ defmodule StockServer.Connection do
   import StockServer.ConnectionSup, only: [start_socket: 0]
   import StockServer.Connection.CommandHandler, only: [handle_command: 2]
 
-  @welcome_msg "Welcome to the stock trader!~n~nComands:~nregister <name> - Registers your comapny~nbuy <stock> <amount> - buys amount of stock~nsell <stock> <amount> - sells amount of stock~ncurrent_stocks - list position of current stocks~nquit - closes the connection~n"
+  @welcome_msg "Welcome to the stock trader!~n~nComands:~nregister <name> - Registers your comapny~nprice <stock> - retuns the price of the stock~nbuy <stock> <amount> - buys amount of stock~nsell <stock> <amount> - sells amount of stock~ncurrent_cash - list current cash~ncurrent_stocks - list position of current stocks~nquit - closes the connection~n"
 
   ## API
 
@@ -33,7 +33,7 @@ defmodule StockServer.Connection do
   end
 
   defp send(socket, message, args) do
-    :ok = :gen_tcp.send(socket, :io_lib.format(message<>"~n", args))
+    :ok = :gen_tcp.send(socket, :io_lib.format(message<>"~n~n", args))
     :ok = :inet.setopts(socket, [{:active, :once}])
     :ok
   end

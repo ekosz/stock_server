@@ -4,7 +4,7 @@ defmodule StockServerTest.Stock do
   use ExUnit.Case
 
   test "creating a stock server" do
-    assert {:ok, pid} = StockServer.Stock.start_link(:APPL)
+    assert {:ok, pid} = StockServer.Stock.start_link(:TEST)
     assert is_pid(pid)
   end
 end

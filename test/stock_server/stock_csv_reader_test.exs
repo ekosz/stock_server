@@ -6,8 +6,8 @@ defmodule StockServerTest.StockCSVReader do
   test "reading a CSV file" do
     test_data = StockServer.StockCSVReader.read(:TEST)
     assert length(test_data) == 3
-    assert Enum.at!(test_data, 0) == 1.50
-    assert Enum.at!(test_data, 1) == 1.51
-    assert Enum.at!(test_data, 2) == 1.52
+    assert Enum.at!(test_data, 0) == 26.50
+    assert Enum.at!(test_data, 1) == 26.37
+    assert Enum.at!(test_data, 2) == 26.87
   end
 end

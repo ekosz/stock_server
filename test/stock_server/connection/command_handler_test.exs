@@ -50,4 +50,17 @@ defmodule StockServerTest.Connection.CommandHandler do
     state = State.new(name: "Eric", stocks: [])
     assert {:error, "no_stocks", State[stocks: []]} = handle_command('current_stocks', state)
   end
+
+  test "getting the price of a stock" do
+    state = State.new(name: "Eric")
+    assert {:ok, stock_price, _state} = handle_command('price APPL', state)
+
+    assert Regex.match? %r/\d+\.\d{2}/, stock_price
+  end
+
+  test "getting the current cash amount" do
+    state = State.new(name: "Eric", cash: 100.3)
+
+    assert {:ok, "100.30", _state} = handle_command('current_cash', state)
+  end
 end
