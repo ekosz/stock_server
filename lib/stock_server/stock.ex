@@ -43,6 +43,15 @@ defmodule StockServer.Stock do
     {:noreply, state}
   end
 
+  def handle_cast({:tick, time}, state) do
+    try do
+      {:noreply, state.current_price(Enum.at!(state.prices, time))}
+    rescue
+      Enum.OutOfBoundsError ->
+        {:stop, :normal, state}
+    end
+  end
+
   def handle_cast(_msg, _state) do
     super
   end

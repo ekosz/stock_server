@@ -1,6 +1,8 @@
 defmodule StockServer.TimerServer do
   use GenServer.Behaviour
 
+  import StockServer.StockNotifier, only: [notify_tick: 1]
+
   ## API
 
   def start_link do
@@ -12,7 +14,6 @@ defmodule StockServer.TimerServer do
   end
 
   ## Callbacks
-
   defrecord State, time: 0, tick_rate: nil
 
   def init([]) do
@@ -32,6 +33,7 @@ defmodule StockServer.TimerServer do
   end
 
   def handle_info(:tick, state) do
+    notify_tick(state.time)
     {:ok, _} = :timer.send_after(state.tick_rate, :tick)
     {:noreply, updated_time(state)}
   end

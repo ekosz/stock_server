@@ -21,19 +21,19 @@ defmodule StockServerTest.Connection.CommandHandler do
     assert {:error, "not_registered", State[]} = handle_command('buy appl 100', state)
   end
 
-  test "buying initial stock" do
-    state = State.new(name: "Eric")
-    assert {:ok, "added 1 of APPL to 0", State[stocks: [APPL: 1]]} = handle_command('buy appl 1', state)
+  test "buying stock" do
+    state = State.new(name: "Eric", stocks: [APPL: 10])
+    assert {:ok, "BOUGHT APPL 1"<>_, State[stocks: [APPL: 11]]} = handle_command('buy appl 1', state)
   end
 
-  test "buying more stock" do
-    state = State.new(name: "Eric", stocks: [APPL: 10])
-    assert {:ok, "added 1 of APPL to 10", State[stocks: [APPL: 11]]} = handle_command('buy appl 1', state)
+  test "buying too much stock" do
+    state = State.new(name: "Eric", cash: 0)
+    assert {:error, "insufficient_cash", _} = handle_command('buy appl 1', state)
   end
 
   test "selling stock" do
     state = State.new(name: "Eric", stocks: [APPL: 10])
-    assert {:ok, "removed 1 of APPL from 10", State[stocks: [APPL: 9]]} = handle_command('sell appl 1', state)
+    assert {:ok, "SOLD APPL 1"<>_, State[stocks: [APPL: 9]]} = handle_command('sell appl 1', state)
   end
 
   test "selling too much stock" do

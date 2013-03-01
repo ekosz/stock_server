@@ -21,6 +21,10 @@ defmodule StockServer.StockNotifier do
     :gen_event.notify(__MODULE__, {:sell, stock, amount, price})
   end
 
+  def notify_tick(time) do
+    :gen_event.notify(__MODULE__, {:tick, time})
+  end
+
   # GenEvent Callbacks
 
   def init([pid]) do

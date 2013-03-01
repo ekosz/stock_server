@@ -65,7 +65,7 @@ defmodule StockServer.Connection.CommandHandler do
 
     notify_buy(stock, amount, current_price)
 
-    {:ok, "added #{amount} of #{stock} to #{current_amount}", state}
+    {:ok, "BOUGHT #{stock} #{amount} #{format_price(current_price)}", state}
   end
 
    defp sell(_stock, amount, current_amount, state) when amount > current_amount do
@@ -81,7 +81,7 @@ defmodule StockServer.Connection.CommandHandler do
 
     notify_sell(stock, amount, 100)
 
-    {:ok, "removed #{amount} of #{stock} from #{current_amount}", state}
+    {:ok, "SOLD #{stock} #{amount} #{format_price(current_price)}", state}
   end
 
   defp format_price(price) do

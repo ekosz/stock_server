@@ -39,5 +39,14 @@ defmodule StockServerTest.StockNotifier do
     :timer.sleep(1)
     assert :gen_server.call(stock, {:was_called, {:sell, :APPL, 10_000, 5.12}})
   end
+
+  test "notifies stock servers of ticks" do
+    assert {:ok, stock} = StockMock.start_link
+    StockServer.StockNotifier.join_feed(stock)
+
+    StockServer.StockNotifier.notify_tick(10)
+    :timer.sleep(1)
+    assert :gen_server.call(stock, {:was_called, {:tick, 10}})
+  end
 end
 
