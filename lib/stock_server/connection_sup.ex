@@ -17,7 +17,7 @@ defmodule StockServer.ConnectionSup do
   end
 
   def init([worker_module]) do
-    {:ok, port} = :application.get_env(:port)
+    {:ok, port} = :application.get_env(:stock_server, :port)
 
     {:ok, listen_socket} = :gen_tcp.listen(port, [{:active, :once}, {:packet, :line}])
     spawn_link(fn -> start_socket() end)

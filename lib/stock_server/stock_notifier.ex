@@ -4,21 +4,21 @@ defmodule StockServer.StockNotifier do
   # API
 
   def start_link do
-    :gen_event.start_link
+    :gen_event.start_link({:local, __MODULE__})
   end
 
-  def join_feed(pid, to_pid) do
-    handler_id = {StockServer.StockNotifier, make_ref()}
-    :gen_event.add_sup_handler(pid, handler_id, [to_pid])
+  def join_feed(to_pid) do
+    handler_id = {__MODULE__, make_ref()}
+    :gen_event.add_sup_handler(__MODULE__, handler_id, [to_pid])
     handler_id
   end
 
-  def notify_buy(pid, stock, amount, price) do
-    :gen_event.notify(pid, {:buy, stock, amount, price})
+  def notify_buy(stock, amount, price) do
+    :gen_event.notify(__MODULE__, {:buy, stock, amount, price})
   end
 
-  def notify_sell(pid, stock, amount, price) do
-    :gen_event.notify(pid, {:sell, stock, amount, price})
+  def notify_sell(stock, amount, price) do
+    :gen_event.notify(__MODULE__, {:sell, stock, amount, price})
   end
 
   # GenEvent Callbacks

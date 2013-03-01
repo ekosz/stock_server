@@ -21,23 +21,21 @@ defmodule StockServerTest.StockNotifier do
   end
 
   test "notifies stocks servers of buys" do
-    assert {:ok, notifier} = StockServer.StockNotifier.start_link
     assert {:ok, stock}   = StockMock.start_link
 
-    StockServer.StockNotifier.join_feed(notifier, stock)
+    StockServer.StockNotifier.join_feed(stock)
 
-    StockServer.StockNotifier.notify_buy(notifier, :APPL, 10_000, 5.12)
+    StockServer.StockNotifier.notify_buy(:APPL, 10_000, 5.12)
     :timer.sleep(1)
     assert :gen_server.call(stock, {:was_called, {:buy, :APPL, 10_000, 5.12}})
   end
 
   test "notifies stocks servers of sells" do
-    assert {:ok, notifier} = StockServer.StockNotifier.start_link
     assert {:ok, stock}   = StockMock.start_link
 
-    StockServer.StockNotifier.join_feed(notifier, stock)
+    StockServer.StockNotifier.join_feed(stock)
 
-    StockServer.StockNotifier.notify_sell(notifier, :APPL, 10_000, 5.12)
+    StockServer.StockNotifier.notify_sell(:APPL, 10_000, 5.12)
     :timer.sleep(1)
     assert :gen_server.call(stock, {:was_called, {:sell, :APPL, 10_000, 5.12}})
   end

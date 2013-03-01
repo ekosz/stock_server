@@ -7,7 +7,7 @@ defmodule StockServer do
   Starts the application
   """
   def start(_type, args) do
-    StockServer.ConnectionSup.start_link
+    StockServerSup.start_link(args)
   end
 
 end

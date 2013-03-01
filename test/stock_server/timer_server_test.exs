@@ -3,17 +3,14 @@ Code.require_file "../../test_helper.exs", __FILE__
 defmodule StockServerTest.TimerServer do
   use ExUnit.Case, async: true
 
-  @tick_rate 10
-
-  def setup_all do
-    assert {:ok, pid} = StockServer.TimerServer.start_link(@tick_rate)
-    assert is_pid(pid)
-    :ok
+  test "getting the current time" do
+    start_time = StockServer.TimerServer.current_time
+    :timer.sleep(get_tick_rate() * 5)
+    assert StockServer.TimerServer.current_time == start_time + 5
   end
 
-  test "getting the current time" do
-    assert StockServer.TimerServer.current_time == 0
-    :timer.sleep(@tick_rate * 5)
-    assert StockServer.TimerServer.current_time == 5
+  defp get_tick_rate do
+    {:ok, tickrates} = :application.get_env(:stock_server, :tickrate)
+    Keyword.get(tickrates, Mix.env)
   end
 end
