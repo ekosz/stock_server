@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Path Transitions</title>
+    <style>
+
+      .x.axis line {
+        shape-rendering: auto;
+      }
+
+      .y.axis path, .y.axis line {
+        fill: none;
+        stroke: black;
+        shape-rendering: crispEdges;
+      }
+
+      .y.axis text {
+        font-family: sans-serif;
+        font-size: 11px;
+      }
+
+      .line {
+        fill: none;
+        stroke: #000;
+        stroke-width: 1.5px;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="http://d3js.org/d3.v2.min.js?2.8.1"></script>
+    <script>
+      (function() {
+        var n = 10,
+        duration = 2000,
+        now = new Date(Date.now() - duration),
+        data = window.data = d3.range(n).map(function() { return 0; });
+
+        var margin = {top: 6, right: 40, bottom: 20, left: 40},
+            width = window.innerWidth - margin.right,
+            height = (window.innerHeight / 2) - margin.top - margin.bottom;
+
+        var x = d3.time.scale()
+            .domain([now - (n - 2) * duration, now - duration])
+            .range([0, width]);
+
+        var y = window.y = d3.scale.linear()
+            .range([height, 0]);
+
+        var line = d3.svg.line()
+            .x(function(d, i) { return x(now - (n - 1 - i) * duration); })
+            .y(function(d, i) { return y(d); });
+
+        var svg = d3.select("body").append("p").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .style("margin-left", -margin.left + "px")
+          .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        svg.append("defs").append("clipPath")
+            .attr("id", "clip")
+          .append("rect")
+            .attr("width", width)
+            .attr("height", height);
+
+        var xaxis = svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(x.axis = d3.svg.axis().scale(x).orient("bottom"));
+
+        var yaxis = svg.append("g")
+            .attr("class", "y axis")
+            .attr("transform", "translate(" + margin.left + ", 0)")
+            .call(y.axis = d3.svg.axis().scale(y).orient("left").ticks(5));
+
+        var path = svg.append("g")
+            .attr("class", "path container")
+            .attr("clip-path", "url(#clip)")
+          .append("path")
+            .data([data])
+            .attr("class", "line");
+
+        var name = svg.append("text")
+            .data([data])
+            .attr('dx', 8)
+            .attr('dy', 3)
+            .attr("transform", "translate(" + (width - margin.left - margin.right) +", " + y(0) + ")")
+            .style('text-anchor', 'start')
+            .text("Awesome Co")
+
+        tick();
+
+        function tick() {
+
+          // update the domains
+          now = new Date();
+          x.domain([now - (n - 2) * duration, now - duration]);
+          y.domain([d3.min(data), d3.max(data)]);
+
+          data.push(Math.random() * 100);
+
+          // redraw the line
+          svg.select(".line")
+              .attr("d", line)
+              .attr("transform", null);
+
+          // slide the x-axis left
+          xaxis.transition()
+              .duration(duration)
+              .ease("linear")
+              .call(x.axis);
+
+          yaxis.call(y.axis);
+
+          name
+              .attr("transform", function(d) { return "translate(" + (width - margin.left - margin.right) +", " + y(d[n-2]) + ")"})
+              .transition()
+            .duration(duration)
+              .ease("linear")
+              .attr("transform", function(d) { return "translate(" + (width - margin.left - margin.right) +", " + y(d[n-2]) + ")"});
+
+          // slide the line left
+          path.transition()
+              .duration(duration)
+              .ease("linear")
+              .attr("transform", "translate(" + x(now - (n - 1) * duration) + ")")
+              .each("end", tick);
+
+
+          // pop the old data point off the front
+          data.shift();
+
+        }
+
+      })();
+    </script>
+  </body>
+</html>
