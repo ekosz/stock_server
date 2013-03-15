@@ -10,6 +10,13 @@ defmodule StockServer.ConnectionSup do
     :supervisor.start_child(__MODULE__, [])
   end
 
+  def connection_states do
+    children = :supervisor.which_children(__MODULE__)
+    Enum.map children, fn({_, pid, _, _}) ->
+      :gen_server.call(pid, :state)
+    end
+  end
+
   ## Callback
 
   def init([]) do

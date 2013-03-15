@@ -1,11 +1,10 @@
-defrecord StockServer.Connection.State, lsocket: nil, name: nil, stocks: [], cash: 100_000.00
 
 defmodule StockServer.Connection do
   use GenServer.Behaviour
 
-  alias StockServer.Connection.State, as: State
+  defrecord State, lsocket: nil, account_pid: nil
+
   import StockServer.ConnectionSup, only: [start_socket: 0]
-  import StockServer.Connection.CommandHandler, only: [handle_command: 2]
 
   ## API
 
@@ -24,9 +23,10 @@ defmodule StockServer.Connection do
   end
 
   def handle_cast(:accept, State[lsocket: listen_socket] = state) do
-    {:ok, accept_socket} = :gen_tcp.accept(listen_socket)
+    {:ok, _accept_socket} = :gen_tcp.accept(listen_socket)
     start_socket()
-    {:noreply, state}
+    {:ok, account_pid} = StockServer.AccountSup.start_account
+    {:noreply, state.account_pid(account_pid)}
   end
 
   defp send(socket, message, args) do
@@ -42,26 +42,26 @@ defmodule StockServer.Connection do
 
   def handle_info({:tcp, socket, reply}, state) do
     response = try do
-      handle_command(reply, state)
+      :gen_server.call(state.account_pid, {:handle_command, reply})
     rescue
       error in _ -> 
         :error_logger.error_report(error)
-        {:error, "server_error", state}
+        {:error, "server_error"}
     end
 
     case response do
-      {:ok, message, new_state} ->
+      {:ok, message} ->
         send(socket, "OK "<>message, [])
-        {:noreply, new_state}
+        {:noreply, state}
 
-      {:error, message, new_state} ->
+      {:error, message} ->
         send(socket, "ERROR "<>message, [])
-        {:noreply, new_state}
+        {:noreply, state}
 
-      {:stop, message, new_state} ->
+      {:stop, message} ->
         send(socket, message, [])
         :gen_tcp.close(socket)
-        {:stop, :normal, new_state}
+        {:stop, :normal, state}
     end
   end
   
@@ -71,6 +71,11 @@ defmodule StockServer.Connection do
 
   def handle_info({:tcp_error, _socket}, state) do
     {:stop, :normal, state}
+  end
+
+  def terminate(_reason, state) do
+    StockServer.AccountSup.stop(state.account_pid)
+    :ok
   end
 
 end

@@ -1,8 +1,8 @@
 defmodule StockServer.Connection.CommandHandler do
 
-  alias StockServer.Connection.State, as: State
+  alias StockServer.Account.State, as: State
 
-  import StockServer.StockNotifier, only: [notify_buy: 3, notify_sell: 3]
+  import StockServer.Notifier, only: [notify_buy: 3, notify_sell: 3]
 
   def handle_command('quit'++_, state) do
     {:stop, "Goodbye", state}

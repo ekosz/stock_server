@@ -1,12 +1,12 @@
 Code.require_file "../../test_helper.exs", __FILE__
 
-defmodule StockServerTest.TimerServer do
+defmodule StockServerTest.Timer do
   use ExUnit.Case, async: true
 
   test "getting the current time" do
-    start_time = StockServer.TimerServer.current_time
+    start_time = StockServer.Timer.current_time
     :timer.sleep(get_tick_rate() * 5)
-    assert StockServer.TimerServer.current_time == start_time + 5
+    assert StockServer.Timer.current_time == start_time + 5
   end
 
   defp get_tick_rate do

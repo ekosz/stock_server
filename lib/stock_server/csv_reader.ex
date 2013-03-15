@@ -1,4 +1,4 @@
-defmodule StockServer.StockCSVReader do
+defmodule StockServer.CSVReader do
   @doc """
   Reads a csv file located in the data/ directory
 

@@ -1,4 +1,4 @@
-defmodule StockServer.StockNotifier do
+defmodule StockServer.Notifier do
   @behavior :gen_event
 
   # API

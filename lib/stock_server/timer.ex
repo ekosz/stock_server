@@ -1,7 +1,7 @@
-defmodule StockServer.TimerServer do
+defmodule StockServer.Timer do
   use GenServer.Behaviour
 
-  import StockServer.StockNotifier, only: [notify_tick: 1]
+  import StockServer.Notifier, only: [notify_tick: 1]
 
   ## API
 
