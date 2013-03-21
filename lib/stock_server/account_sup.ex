@@ -20,8 +20,15 @@ defmodule StockServer.AccountSup do
     formatted_acconts = Enum.map accounts, fn({_, pid, _, _}) ->
       format(:gen_server.call(pid, :state))
     end
+    formatted_acconts = remove_unregistered(formatted_acconts)
     Enum.sort formatted_acconts, fn({_,a,_,_}, {_,b,_,_}) -> 
       a > b 
+    end
+  end
+
+  defp remove_unregistered(states) do
+    Enum.filter states, fn(state) ->
+      state.name != nil
     end
   end
 

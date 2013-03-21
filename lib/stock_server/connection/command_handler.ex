@@ -59,6 +59,10 @@ defmodule StockServer.Connection.CommandHandler do
     {:error, "unknown_command", state}
   end
 
+  defp buy(_stock, amount, _current_price, state) when amount < 0 do
+    {:error, "CHEATER", state}
+  end
+
   defp buy(_stock, amount, current_price, State[cash: cash] = state) when amount * current_price > cash do
     {:error, "insufficient_cash", state}
   end
@@ -73,6 +77,10 @@ defmodule StockServer.Connection.CommandHandler do
     notify_buy(stock, amount, current_price)
 
     {:ok, "BOUGHT #{stock} #{amount} #{format_price(current_price)}", state}
+  end
+
+  defp sell(_stock, amount, _current_ammount, state) when amount < 0 do
+    {:error, "CHEATER", state}
   end
 
    defp sell(_stock, amount, current_amount, state) when amount > current_amount do
@@ -92,7 +100,7 @@ defmodule StockServer.Connection.CommandHandler do
   end
 
   defp format_price(price) do
-    list_to_binary(:io_lib.format('~.2f',[price]))
+    list_to_binary(:io_lib.format('~.2f',[float(price)]))
   end
 
   defp round_to_hundredth(number) do

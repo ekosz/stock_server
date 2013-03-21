@@ -4,7 +4,7 @@ defmodule StockServerTest.Connection.CommandHandler do
   use ExUnit.Case, async: true
 
   import StockServer.Connection.CommandHandler, only: [handle_command: 2]
-  alias StockServer.Connection.State, as: State
+  alias StockServer.Account.State, as: State
 
   test "quiting" do
     state = State.new
@@ -18,32 +18,32 @@ defmodule StockServerTest.Connection.CommandHandler do
 
   test "trying a command before registering" do
     state = State.new
-    assert {:error, "not_registered", State[]} = handle_command('buy appl 100', state)
+    assert {:error, "not_registered", State[]} = handle_command('buy aapl 100', state)
   end
 
   test "buying stock" do
-    state = State.new(name: "Eric", stocks: [APPL: 10])
-    assert {:ok, "BOUGHT APPL 1"<>_, State[stocks: [APPL: 11]]} = handle_command('buy appl 1', state)
+    state = State.new(name: "Eric", stocks: [AAPL: 10])
+    assert {:ok, "BOUGHT AAPL 1"<>_, State[stocks: [AAPL: 11]]} = handle_command('buy aapl 1', state)
   end
 
   test "buying too much stock" do
     state = State.new(name: "Eric", cash: 0)
-    assert {:error, "insufficient_cash", _} = handle_command('buy appl 1', state)
+    assert {:error, "insufficient_cash", _} = handle_command('buy aapl 1', state)
   end
 
   test "selling stock" do
-    state = State.new(name: "Eric", stocks: [APPL: 10])
-    assert {:ok, "SOLD APPL 1"<>_, State[stocks: [APPL: 9]]} = handle_command('sell appl 1', state)
+    state = State.new(name: "Eric", stocks: [AAPL: 10])
+    assert {:ok, "SOLD AAPL 1"<>_, State[stocks: [AAPL: 9]]} = handle_command('sell aapl 1', state)
   end
 
   test "selling too much stock" do
-    state = State.new(name: "Eric", stocks: [APPL: 10])
-    assert {:error, "insufficient_stocks", State[stocks: [APPL: 10]]} = handle_command('sell appl 11', state)
+    state = State.new(name: "Eric", stocks: [AAPL: 10])
+    assert {:error, "insufficient_stocks", State[stocks: [AAPL: 10]]} = handle_command('sell aapl 11', state)
   end
 
   test "listing >0 stocks" do
-    state = State.new(name: "Eric", stocks: [APPL: 10, MSFT: 5])
-    assert {:ok, "APPL 10 MSFT 5 ", State[stocks: [APPL: 10, MSFT: 5]]} = handle_command('current_stocks', state)
+    state = State.new(name: "Eric", stocks: [AAPL: 10, MSFT: 5])
+    assert {:ok, "AAPL 10 MSFT 5 ", State[stocks: [AAPL: 10, MSFT: 5]]} = handle_command('current_stocks', state)
   end
 
   test "listing 0 stocks" do
@@ -53,7 +53,7 @@ defmodule StockServerTest.Connection.CommandHandler do
 
   test "getting the price of a stock" do
     state = State.new(name: "Eric")
-    assert {:ok, stock_price, _state} = handle_command('price APPL', state)
+    assert {:ok, stock_price, _state} = handle_command('price AAPL', state)
 
     assert Regex.match? %r/\d+\.\d{2}/, stock_price
   end

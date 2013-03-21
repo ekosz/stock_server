@@ -15,7 +15,7 @@ defmodule StockServer.StockSup do
   ## Callbacks
 
   def init([]) do
-    stocks = [:APPL]
+    stocks = [:AAPL, :BAC, :C, :GE, :HAS, :XOM]
 
     workers = Enum.map stocks, fn(stock) ->
       worker(StockServer.Stock, [stock], id: stock)
